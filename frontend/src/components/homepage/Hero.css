@@ -1,0 +1,51 @@
+.hero-section {
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  position: relative;
+  color: #fff;
+}
+
+.hero-section .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.welcome-text {
+  font-size: 1.2rem;
+  color: #0EDF26;
+  font-weight: 700;
+  font-size: 30px;
+}
+
+.cta-btn {
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #0edf26;
+  color: #fff;
+  border: none; 
+  transition: background-color 0.9s ease, transform 0.9s ease;
+  width: 200px;
+}
+
+.cta-btn:hover {
+  background-color: #0bc020;
+  color: #fff;
+  transform: translateY(-2px); 
+}
+
