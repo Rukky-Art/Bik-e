@@ -4,7 +4,7 @@ import About from "./components/homepage/About.tsx"
 import Service from "./components/homepage/Service.tsx"
 import Contact from "./components/homepage/Contact.tsx"
 import Footer from "./components/homepage/footer.tsx"
-import Register from "./components/pages/Register.tsx"
+import PoultryBirds from "./components/Products/PoultryBirds.tsx"
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
       <Service />
       <Contact />
       <Footer />
-      <Register />
+      <PoultryBirds/>
     </>
   )
 }
