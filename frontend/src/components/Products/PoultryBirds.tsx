@@ -7,7 +7,7 @@ import duck from "../../assets/products/duck.svg";
 import layer from "../../assets/products/layer.svg";
 import Navbar from "../homepage/Navbar"
 import Footer from "../homepage/footer";
-import PoultryProductCard from "../../components/Products/PoultryProductsCard"
+import PoultryProductCard from "./PoultryProductsCard"
 
 const PoultryBirds: React.FC = () => {
   const products = [
@@ -26,17 +26,20 @@ const PoultryBirds: React.FC = () => {
   ];
 
   return (
-    <div className="container my-5">
+    <div>
       <Navbar />
+    <div className="container my-5">
       <h2 className="text-center text-success mb-4">Poultry Birds</h2>
       <div className="row">
         {products.map((item) => (
           <PoultryProductCard key={item.id} product={item} />
         ))}
       </div>
-      <Footer />
     </div>
-  );
+      <Footer />
+
+    </div>
+  )
 }
 
 export default PoultryBirds
