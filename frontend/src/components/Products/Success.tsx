@@ -1,17 +1,20 @@
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearCart } from "./../../slice/cartSlice";
 
 const Success: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Clear local cart
-    localStorage.removeItem("cart");
+    // ✅ clear the cart once order is successful
+    dispatch(clearCart());
+  }, [dispatch]);
 
-    // Auto redirect after 5s
-    const timer = setTimeout(() => {
-      window.location.href = "/";
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const handleBackToShop = () => {
+    navigate("/"); // go back to landing page
+  };
 
   return (
     <div className="d-flex align-items-center justify-content-center min-vh-100 bg-light p-3">
@@ -50,21 +53,18 @@ const Success: React.FC = () => {
 
         {/* Email Section */}
         <div className="email-section text-center bg-light py-5 px-3">
-          <div className="email-icon-wrapper mb-3">
-            <i
-              className="bi bi-envelope"
-              style={{ fontSize: "3rem", color: "#0d6e4f" }}
-            ></i>
-          </div>
-          <p className="text-success mb-0" style={{ fontSize: "0.95rem" }}>
-            An email containing your order details
-            <br />
-            has been sent to the email provided
-          </p>
+          {/* ✅ Back to shop button */}
+          <button
+            className="btn btn-success px-4 py-2"
+            style={{ backgroundColor: "#0d6e4f" }}
+            onClick={handleBackToShop}
+          >
+            Back to Shop
+          </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Success
+export default Success;

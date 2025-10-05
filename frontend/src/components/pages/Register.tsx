@@ -1,34 +1,46 @@
-import React from "react"
-import Footer from "../homepage/footer"
-import Navbar from "../homepage/Navbar"
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {type AppDispatch, type RootState } from "./../../store/store";
+import { signUpUser } from "./../../slice/authSlice";
+import Footer from "../homepage/footer";
+import Navbar from "../homepage/Navbar";
 
 const Register: React.FC = () => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { loading, error, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    dispatch(
+      signUpUser({
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password,
+      })
+    );
+  };
 
-    const formData = {
-      firstName: (e.currentTarget.firstName as HTMLInputElement).value,
-      lastName: (e.currentTarget.lastName as HTMLInputElement).value,
-      email: (e.currentTarget.email as HTMLInputElement).value,
-      phone: (e.currentTarget.phone as HTMLInputElement).value,
-      password: (e.currentTarget.password as HTMLInputElement).value,
-    };
-
-    if (
-      !formData.firstName ||
-      !formData.lastName ||
-      !formData.email ||
-      !formData.phone ||
-      !formData.password
-    ) {
-      alert("Please fill in all fields");
-      return;
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/home"); // ✅ redirect to home after success
     }
-
-    alert(
-      `Account creation attempted for: ${formData.firstName} ${formData.lastName}`
-    )
-  }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="bg-light min-vh-100">
@@ -57,6 +69,8 @@ const Register: React.FC = () => {
                     name="firstName"
                     className="form-control"
                     placeholder="Enter First Name"
+                    value={formData.firstName}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -71,6 +85,8 @@ const Register: React.FC = () => {
                     name="lastName"
                     className="form-control"
                     placeholder="Enter Last Name"
+                    value={formData.lastName}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -85,6 +101,8 @@ const Register: React.FC = () => {
                     name="email"
                     className="form-control"
                     placeholder="Enter Email Address"
+                    value={formData.email}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -99,6 +117,8 @@ const Register: React.FC = () => {
                     name="phone"
                     className="form-control"
                     placeholder="Enter Phone Number"
+                    value={formData.phone}
+                    onChange={handleChange}
                     required
                   />
                 </div>
@@ -113,29 +133,43 @@ const Register: React.FC = () => {
                     name="password"
                     className="form-control"
                     placeholder="Enter Password"
+                    value={formData.password}
+                    onChange={handleChange}
                     required
                   />
                 </div>
 
+                {/* ✅ Show error below button */}
                 <div className="d-grid mb-3">
                   <button
                     type="submit"
                     className="btn btn-success fw-bold text-white"
+                    disabled={loading}
                   >
-                    Create an Account
+                    {loading ? "Creating Account..." : "Create an Account"}
                   </button>
                 </div>
 
+                {error && (
+                  <div className="text-center text-danger fw-bold mb-3">
+                    <span>{error}</span>
+                  </div>
+                )}
+
                 <div className="text-center">
                   <small style={{ fontSize: "12px", color: "#D9D9D9" }}>
-                    By signing up you accept our terms and conditions & Privacy
+                    By signing up you accept our Terms & Conditions & Privacy
                     Policy
                   </small>
                 </div>
-                <div className="text-center">
+
+                <div className="text-center mt-3">
                   <small className="text-muted">Already have an account?</small>
                   <br />
-                  <a href="/login" className="btn btn-outline-success fw-bold">
+                  <a
+                    href="/login"
+                    className="btn btn-outline-success fw-bold mt-2"
+                  >
                     Login
                   </a>
                 </div>
@@ -144,9 +178,28 @@ const Register: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* ✅ Simple Bootstrap modal for verifying */}
+      {loading && (
+        <div
+          className="modal fade show"
+          style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content text-center p-4">
+              <div
+                className="spinner-border text-success mb-3"
+                role="status"
+              ></div>
+              <p className="mb-0">Verifying...</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
-}
+};
 
-export default Register
+export default Register;

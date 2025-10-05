@@ -1,82 +1,65 @@
-import React, { useEffect, useState } from "react"
+import React from "react";
 import cartUrl from "../../assets/cart.svg";
 import Navbar from "../homepage/Navbar";
 import Footer from "../homepage/footer";
+import { useSelector, useDispatch } from "react-redux";
+import {type RootState } from "../../store/store";
+import { addToCart, removeFromCart, clearCart } from "../../slice/cartSlice";
+import { useNavigate } from "react-router-dom";
 
-const DELIVERY_FEE = 5000;
-
-interface CartItemType {
-  name: string;
-  price: number;
-  quantity: number;
-  category?: string;
-}
+const DELIVERY_FEE = 1000;
 
 const Cart: React.FC = () => {
-  const [cart, setCart] = useState<CartItemType[]>([]);
+  const cart = useSelector((state: RootState) => state.cart.items);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Load from localStorage
-  useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCart(savedCart);
-  }, []);
-
-  // Save to localStorage when cart changes
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  const updateQuantity = (index: number, change: number) => {
-    setCart((prev) =>
-      prev.map((item, i) =>
-        i === index
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    );
-  };
-
-  const setQuantity = (index: number, value: number) => {
-    const quantity = parseInt(value.toString());
-    if (quantity > 0) {
-      setCart((prev) =>
-        prev.map((item, i) => (i === index ? { ...item, quantity } : item))
-      );
-    }
-  };
-
-  const removeItem = (index: number) => {
-    if (window.confirm("Are you sure you want to remove this item?")) {
-      setCart((prev) => prev.filter((_, i) => i !== index));
-    }
-  };
-
-  const saveForLater = (index: number) => {
-    alert(`${cart[index].name} saved for later!`);
-    // You could implement "saved items" here
-  };
-
+  // Calculate totals
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
   const total = subtotal + DELIVERY_FEE;
 
-  const proceedToCheckout = () => {
-    if (cart.length === 0) {
-      alert("Your cart is empty!");
-      return;
-    }
-    alert(`Proceeding to checkout\nTotal: ₦${total.toLocaleString()}`);
-    // Navigate to checkout page if needed
+  // Increase quantity
+  const handleIncrease = (id: number) => {
+    dispatch(
+      addToCart({
+        id,
+        name: cart.find((item) => item.id === id)!.name,
+        price: cart.find((item) => item.id === id)!.price,
+        image: cart.find((item) => item.id === id)!.image,
+        quantity: 1, // always increment by +1
+      })
+    );
   };
+
+  // Decrease quantity
+  const handleDecrease = (id: number) => {
+    dispatch(removeFromCart(id)); // reducer will -1 or remove
+  };
+
+  // Remove completely (clear one item)
+  const handleRemove = (id: number) => {
+    if (window.confirm("Are you sure you want to remove this item?")) {
+      // Dispatch remove until item is gone
+      const item = cart.find((i) => i.id === id);
+      if (item) {
+        for (let i = 0; i < item.quantity; i++) {
+          dispatch(removeFromCart(id));
+        }
+      }
+    }
+  };
+
+ const proceedToCheckout = () => {
+   navigate("/success");
+ };
+
 
   return (
     <div className="bg-light min-vh-100">
-      {/* Cart Header */}
-      <div>
-        <Navbar />
-      </div>
+      <Navbar />
 
       {/* Continue Shopping */}
       <div className="container">
@@ -107,24 +90,21 @@ const Cart: React.FC = () => {
             {/* Cart Items */}
             <div className="col-lg-8">
               <h4 className="fw-bold mb-3">Cart</h4>
-              {cart.map((item, index) => (
+              {cart.map((item) => (
                 <div
                   className="cart-item shadow-sm p-3 rounded mb-3 bg-white"
-                  key={index}
+                  key={item.id}
                 >
                   <div className="row align-items-center">
                     <div className="col-md-2 col-3">
                       <img
-                        src="https://via.placeholder.com/100"
+                        src={item.image || "https://via.placeholder.com/100"}
                         alt={item.name}
                         className="img-fluid rounded"
                       />
                     </div>
                     <div className="col-md-3 col-9">
                       <h6 className="fw-bold mb-1">{item.name}</h6>
-                      <small className="text-muted">
-                        {item.category || "Livestock"}
-                      </small>
                     </div>
                     <div className="col-md-2 col-6 price-text">
                       ₦ {item.price.toLocaleString()}
@@ -133,7 +113,7 @@ const Cart: React.FC = () => {
                       <div className="d-flex align-items-center gap-2">
                         <button
                           className="btn btn-outline-success btn-sm"
-                          onClick={() => updateQuantity(index, -1)}
+                          onClick={() => handleDecrease(item.id)}
                         >
                           -
                         </button>
@@ -142,14 +122,11 @@ const Cart: React.FC = () => {
                           className="form-control text-center"
                           style={{ width: "60px" }}
                           value={item.quantity}
-                          onChange={(e) =>
-                            setQuantity(index, Number(e.target.value))
-                          }
-                          min={1}
+                          readOnly
                         />
                         <button
                           className="btn btn-outline-success btn-sm"
-                          onClick={() => updateQuantity(index, 1)}
+                          onClick={() => handleIncrease(item.id)}
                         >
                           +
                         </button>
@@ -157,14 +134,8 @@ const Cart: React.FC = () => {
                     </div>
                     <div className="col-md-2 d-flex gap-2">
                       <button
-                        className="btn btn-outline-success btn-sm flex-fill"
-                        onClick={() => saveForLater(index)}
-                      >
-                        <i className="bi bi-heart"></i> Save
-                      </button>
-                      <button
                         className="btn btn-outline-danger btn-sm flex-fill"
-                        onClick={() => removeItem(index)}
+                        onClick={() => handleRemove(item.id)}
                       >
                         <i className="bi bi-trash"></i> Delete
                       </button>
@@ -203,14 +174,22 @@ const Cart: React.FC = () => {
                   >
                     Proceed to Checkout
                   </button>
+                  <button
+                    className="btn btn-outline-danger w-100 mt-2"
+                    onClick={() => dispatch(clearCart())}
+                  >
+                    Clear Cart
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
-}
+};
 
-export default Cart
+export default Cart;
