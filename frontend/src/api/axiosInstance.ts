@@ -7,4 +7,13 @@ const axiosInstance = axios.create({
   },
 });
 
+// ✅ Automatically attach token (if available)
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("authToken"); // or sessionStorage if you prefer
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export default axiosInstance;
