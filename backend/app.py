@@ -45,11 +45,21 @@ def signup():
         conn.close()
         return jsonify({'error': 'User already exists'}), 400
 
-    c.execute('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', (name, email, password))
+    # ✅ Insert the new user
+    c.execute('INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+              (name, email, password))
     conn.commit()
     conn.close()
 
-    return jsonify({'message': 'User registered successfully!'}), 201
+    # ✅ Create a token just like in signin
+    token = serializer.dumps({'email': email})
+
+    # ✅ Return the same structure as /api/signin
+    return jsonify({
+        'message': 'User registered successfully!',
+        'user': {'name': name, 'email': email},
+        'token': token
+    }), 201
 
 
 # ---- Sign In ----
