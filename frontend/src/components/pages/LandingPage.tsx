@@ -36,31 +36,21 @@ const LandingPage: React.FC = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="hero position-relative d-flex align-items-center justify-content-center text-center text-white">
+      <section className="bg-white hero position-relative d-flex align-items-center justify-content-center text-center text-white">
         {/* Animated Background Shapes */}
         <div className="bg-shape shape-1 position-absolute"></div>
         <div className="bg-shape shape-2 position-absolute"></div>
         <div className="bg-shape shape-3 position-absolute"></div>
 
         <div className="hero-content p-4" style={{ zIndex: 10 }}>
-            <img
-              src={logo}
-              className="card-img-top"
-              alt="logo"
-            />
-          
+          <img
+            src={logo}
+            className="card-img-top"
+            alt="logo"
+            style={{ backgroundColor: "white" , borderRadius: "21%", width: "150px", height: "150px"}}
+          />
 
-          <h1
-            className="brand-name fw-bold mb-3"
-            style={{
-              fontSize: "3.5rem",
-              textShadow: "2px 2px 8px rgba(0,0,0,0.3)",
-            }}
-          >
-            Bike Farms
-          </h1>
-
-          <p className="tagline mb-4 fs-5">
+          <p className="tagline mt-4 fs-5">
             Connecting Farmers Directly to Buyers <br />
             <strong>Save Time. Save Money. Save Energy.</strong>
           </p>

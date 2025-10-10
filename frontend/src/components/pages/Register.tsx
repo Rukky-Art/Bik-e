@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {type AppDispatch, type RootState } from "./../../store/store";
 import { signUpUser } from "./../../slice/authSlice";
-import Footer from "../homepage/footer";
-import Navbar from "../homepage/Navbar";
 
 const Register: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -44,8 +42,6 @@ const Register: React.FC = () => {
 
   return (
     <div className="bg-light min-vh-100">
-      <Navbar />
-
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-lg-6">
@@ -196,8 +192,6 @@ const Register: React.FC = () => {
           </div>
         </div>
       )}
-
-      <Footer />
     </div>
   );
 };
